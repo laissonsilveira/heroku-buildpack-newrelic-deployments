@@ -12,7 +12,6 @@ indent() {
 
 export "NEW_RELIC_API_KEY=$(cat $ENV_DIR/NEW_RELIC_API_KEY)"
 export "NEW_RELIC_APP_ID=$(cat $ENV_DIR/NEW_RELIC_APP_ID)"
-export "GIT_COMMIT_SHA_1=$(cat $ENV_DIR/SOURCE_VERSION)"
 
 echo "-----> Creating deployment on New Relic for $NEW_RELIC_APP_ID"
 
@@ -22,7 +21,7 @@ curl -X POST "https://api.newrelic.com/v2/applications/$NEW_RELIC_APP_ID/deploym
      -d \
 '{
   "deployment": {
-    "revision": "'$GIT_COMMIT_SHA_1'",
+    "revision": "'$SOURCE_VERSION'",
     "user": "Heroku"
   }
 }'
