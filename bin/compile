@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+BUILD_DIR=$1  # location of the app
+CACHE_DIR=$2  # location the buildpack can use to cache build artifacts between builds
+ENV_DIR=$3    # environment variables
+
+indent() {
+  sed 's/^/       /'
+}
+
+export "NEW_RELIC_API_KEY=$(cat $ENV_DIR/NEW_RELIC_API_KEY)"
+export "NEW_RELIC_APP_ID=$(cat $ENV_DIR/NEW_RELIC_APP_ID)"
+export "GIT_COMMIT_SHA_1=$(cat $ENV_DIR/SOURCE_VERSION)"
+
+echo "-----> Creating deployment on New Relic for $NEW_RELIC_APP_ID"
+
+curl -X POST "https://api.newrelic.com/v2/applications/$NEW_RELIC_APP_ID/deployments.json" \
+     -H "X-Api-Key:$NEW_RELIC_API_KEY" -i \
+     -H 'Content-Type: application/json' \
+     -d \
+'{
+  "deployment": {
+    "revision": "'$GIT_COMMIT_SHA_1'",
+    "user": "Heroku"
+  }
+}'
+
+echo "Done" | indent
