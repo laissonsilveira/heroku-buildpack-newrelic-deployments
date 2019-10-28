@@ -10,13 +10,13 @@ BUILD_DIR=$1
 CACHE_DIR=$2
 ENV_DIR=$3
 
-echo -e "-----> New Relic Deployment"
+echo -e "-----> New Relic"
 
-if [[ -f $ENV_DIR/NEW_RELIC_API_KEY && -f $ENV_DIR/NEW_RELIC_APP_NAME ]]; then
+if [[ -f $ENV_DIR/NEW_RELIC_API_KEY && -f $ENV_DIR/NEW_RELIC_APP_ID ]]; then
   export "NEW_RELIC_API_KEY=$(cat $ENV_DIR/NEW_RELIC_API_KEY)"
   export "NEW_RELIC_APP_ID=$(cat $ENV_DIR/NEW_RELIC_APP_ID)"
 
-  echo -e "Creating deployment for $NEW_RELIC_APP_ID\n" | indent
+  echo -e "Creating deployment for application $NEW_RELIC_APP_ID\n" | indent
 
   curl -X POST "https://api.newrelic.com/v2/applications/$NEW_RELIC_APP_ID/deployments.json" \
        -H "X-Api-Key:$NEW_RELIC_API_KEY" -i \
@@ -24,7 +24,7 @@ if [[ -f $ENV_DIR/NEW_RELIC_API_KEY && -f $ENV_DIR/NEW_RELIC_APP_NAME ]]; then
        -d '{ "deployment": { "revision": "'$SOURCE_VERSION'", "user": "Heroku" } }' \
        -s | indent
 
-  echo -e "\nDone\n"
+  echo -e "\n" | indent
 else
   echo "Missing NEW_RELIC_API_KEY or NEW_RELIC_APP_ID" | indent
   exit 1
