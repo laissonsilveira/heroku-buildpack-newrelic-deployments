@@ -18,11 +18,11 @@ if [[ -f $ENV_DIR/NEW_RELIC_API_KEY && -f $ENV_DIR/NEW_RELIC_APP_NAME ]]; then
 
   echo -e "Creating deployment for $NEW_RELIC_APP_ID\n" | indent
 
-  curl -s -X POST "https://api.newrelic.com/v2/applications/$NEW_RELIC_APP_ID/deployments.json" \
-      -H "X-Api-Key:$NEW_RELIC_API_KEY" -i \
-      -H 'Content-Type: application/json' \
-      -d '{ "deployment": { "revision": "'$SOURCE_VERSION'", "user": "Heroku" } }' \
-      | indent
+  curl -X POST "https://api.newrelic.com/v2/applications/$NEW_RELIC_APP_ID/deployments.json" \
+       -H "X-Api-Key:$NEW_RELIC_API_KEY" -i \
+       -H 'Content-Type: application/json' \
+       -d '{ "deployment": { "revision": "'$SOURCE_VERSION'", "user": "Heroku" } }' \
+       -s | indent
 else
   echo "Missing NEW_RELIC_API_KEY or NEW_RELIC_APP_ID" | indent
   exit 1
