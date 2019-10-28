@@ -2,21 +2,20 @@
 
 set -eo pipefail
 
-ENV_DIR=$3
-
 indent() {
   sed 's/^/       /'
 }
 
-export "NEW_RELIC_API_KEY=$(cat $ENV_DIR/NEW_RELIC_API_KEY)"
-export "NEW_RELIC_APP_ID=$(cat $ENV_DIR/NEW_RELIC_APP_ID)"
+BUILD_DIR=$1
+CACHE_DIR=$2
+ENV_DIR=$3
 
 echo -e "-----> New Relic Deployment\n"
 
-if [ -z ${NEW_RELIC_API_KEY+x} ||  -z ${NEW_RELIC_APP_ID+x} ]; then
-  echo "Missing NEW_RELIC_API_KEY or NEW_RELIC_APP_ID" | indent
-  exit 1
-else
+if [[ -f $ENV_DIR/NEW_RELIC_API_KEY && -f $ENV_DIR/NEW_RELIC_APP_NAME ]]; then
+  export "NEW_RELIC_API_KEY=$(cat $ENV_DIR/NEW_RELIC_API_KEY)"
+  export "NEW_RELIC_APP_ID=$(cat $ENV_DIR/NEW_RELIC_APP_ID)"
+
   echo -e "Creating deployment for $NEW_RELIC_APP_ID\n" | indent
 
   curl -s -X POST "https://api.newrelic.com/v2/applications/$NEW_RELIC_APP_ID/deployments.json" \
@@ -24,4 +23,7 @@ else
       -H 'Content-Type: application/json' \
       -d '{ "deployment": { "revision": "'$SOURCE_VERSION'", "user": "Heroku" } }' \
       | indent
+else
+  echo "Missing NEW_RELIC_API_KEY or NEW_RELIC_APP_ID" | indent
+  exit 1
 fi
