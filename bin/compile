@@ -2,9 +2,7 @@
 
 set -eo pipefail
 
-BUILD_DIR=$1  # location of the app
-CACHE_DIR=$2  # location the buildpack can use to cache build artifacts between builds
-ENV_DIR=$3    # environment variables
+ENV_DIR=$3
 
 indent() {
   sed 's/^/       /'
@@ -13,17 +11,17 @@ indent() {
 export "NEW_RELIC_API_KEY=$(cat $ENV_DIR/NEW_RELIC_API_KEY)"
 export "NEW_RELIC_APP_ID=$(cat $ENV_DIR/NEW_RELIC_APP_ID)"
 
-echo "-----> Creating deployment on New Relic for $NEW_RELIC_APP_ID"
+echo -e "-----> New Relic Deployment\n"
 
-curl -X POST "https://api.newrelic.com/v2/applications/$NEW_RELIC_APP_ID/deployments.json" \
-     -H "X-Api-Key:$NEW_RELIC_API_KEY" -i \
-     -H 'Content-Type: application/json' \
-     -d \
-'{
-  "deployment": {
-    "revision": "'$SOURCE_VERSION'",
-    "user": "Heroku"
-  }
-}'
+if [ -z ${NEW_RELIC_API_KEY+x} ||  -z ${NEW_RELIC_APP_ID+x} ]; then
+  echo "Missing NEW_RELIC_API_KEY or NEW_RELIC_APP_ID" | indent
+  exit 1
+else
+  echo -e "Creating deployment for $NEW_RELIC_APP_ID\n" | indent
 
-echo "Done" | indent
+  curl -s -X POST "https://api.newrelic.com/v2/applications/$NEW_RELIC_APP_ID/deployments.json" \
+      -H "X-Api-Key:$NEW_RELIC_API_KEY" -i \
+      -H 'Content-Type: application/json' \
+      -d '{ "deployment": { "revision": "'$SOURCE_VERSION'", "user": "Heroku" } }' \
+      | indent
+fi
