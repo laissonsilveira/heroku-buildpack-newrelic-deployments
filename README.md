@@ -11,4 +11,4 @@ Add the following environnement variables to Heroku:
 
 Add buildpack to Heroku:
 
-`heroku buildpacks:add https://github.com/aq/heroku-buildpack-newrelic-deploy-notification.git`
+`heroku buildpacks:add https://github.com/laissonsilveira/heroku-buildpack-newrelic-deployments.git`
