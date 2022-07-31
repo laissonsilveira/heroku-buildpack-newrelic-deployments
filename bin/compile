@@ -21,7 +21,7 @@ if [[ -f $ENV_DIR/NEW_RELIC_API_KEY && -f $ENV_DIR/NEW_RELIC_APP_ID ]]; then
   curl -X POST "https://api.newrelic.com/v2/applications/$NEW_RELIC_APP_ID/deployments.json" \
        -H "X-Api-Key:$NEW_RELIC_API_KEY" -i \
        -H 'Content-Type: application/json' \
-       -d '{ "deployment": { "revision": "'$SOURCE_VERSION'", "user": "Heroku" } }' \
+       -d '{ "deployment": { "revision": "'$SOURCE_VERSION'", "user": "[Heroku] laisson.r.silveira@gmail.com" } }' \
        -s | indent
 
   echo -e "\n" | indent
